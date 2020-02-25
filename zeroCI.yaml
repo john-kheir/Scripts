@@ -1,0 +1,8 @@
+prequisties:
+  - echo "testprequisties"
+
+install:
+  - echo "test_install"
+
+script:
+  - echo "test_script"
