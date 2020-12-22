@@ -14,14 +14,15 @@ def get_loggify_fields_and_corresponding_data_sources(loggify_files_path):
 
             loggify_output_fields = []
             for line in lines:
-                if "output" in line:
+                line = line.lstrip()
+                if line.startswith("output") and "from" in line:
                     f = line.split("output")[1].split("from")[0]
                     field = f.strip().strip("|")
                     if field == "concatenated event_context":
                         continue
                     loggify_output_fields.append(field)
                 elif "meta name" in line:
-                    data_source = line.split()[-1].strip('"')
+                    data_source = line.split("name")[-1].strip().strip('"')
             # use set to remove duplicate elements
             loggify_output_fields = list(set(loggify_output_fields))
 
@@ -58,13 +59,13 @@ def diff_between_excel_and_loggify_dicts(loggify_dict, excel_dict):
         if key in excel_dict.keys():
             dict_diff[key] = list(set(loggify_dict[key]) - set(excel_dict[key]))
         else:
-            k = key + "(new field)"
+            k = key + " (new field)"
             dict_diff[k] = loggify_dict[key]
     return dict_diff
 
 
 def fill_excel_sheet_with_differences(csv_file, diff_dict):
-    with open('write.csv', mode='w') as updated_file:
+    with open('Loggify_current_fields_CIM2_review_new-modified.csv', mode='w') as updated_file:
         file_writer = csv.writer(updated_file, delimiter=',', quotechar='"')
         with open(csv_file) as csv_f:
             csv_reader = csv.reader(csv_f, delimiter=',')
@@ -76,8 +77,9 @@ def fill_excel_sheet_with_differences(csv_file, diff_dict):
                     file_writer.writerow([row[0], row[1], row[2], row[3], row[4], "New data sources"])
                 else:
                     line_count += 1
-                    new_data_sources = ','.join(diff_dict[row[0]])
-                    file_writer.writerow([row[0], row[1], row[2], row[3], row[4], new_data_sources])
+                    if row[0] in diff_dict.keys():
+                        new_data_sources = ','.join(diff_dict[row[0]])
+                        file_writer.writerow([row[0], row[1], row[2], row[3], row[4], new_data_sources])
         for key in diff_dict.keys():
             if "(new field)" in key:
                 data_sources_com_sep = ','.join(diff_dict[key])
