@@ -43,13 +43,11 @@ def get_existing_excel_fields_and_corresponding_data_sources(csv_file):
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
-                print(f'Column names are {", ".join(row)}')
                 line_count = -1
             else:
-                data_sources = row[4]
+                data_sources = row[4].lstrip()
                 fields_in_excel.append(row[0])
                 excel_fields_dict[row[0]] = data_sources.replace(" ", "").split(",")
-        print(f"Excel Fields dict: {excel_fields_dict}")
     return fields_in_excel, excel_fields_dict
 
 
@@ -105,7 +103,6 @@ if __name__ == "__main__":
 
     # this include the diff in the data sources + the new fields
     different_dict = diff_between_excel_and_loggify_dicts(loggify_dict, excel_dict)
-    print(f"Different Dicts: {different_dict}")
 
     # create new csv file
     fill_excel_sheet_with_differences(file, different_dict)
