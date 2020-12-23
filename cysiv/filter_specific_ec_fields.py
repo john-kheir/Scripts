@@ -40,7 +40,7 @@ def get_event_context_fields_per_data_source(csv_file, data_sources):
                     else:
                         if data_source in row[4] or data_source in row[5]:
                             if "event_context" in row[2]:
-                                file_writer.writerow([line_count, row[0], row[3]])
+                                file_writer.writerow([line_count, row[0].replace("(new field)", ""), row[3]])
                                 line_count += 1
 
 
